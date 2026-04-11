@@ -50,14 +50,27 @@
     .preview-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
     .preview-label { font-size: 0.72rem; color: #555578; width: 32px; flex-shrink: 0; }
     .preview-title { font-size: 1rem; font-weight: 600; color: #d8d8f0; }
-    .category-badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 500; }
-    .cat-할일 { background: #1e3a2e; color: #60c080; }
-    .cat-일정 { background: #1e2a3e; color: #6090d0; }
-    .cat-아이디어 { background: #2e2a1e; color: #c0a040; }
-    .cat-쇼핑 { background: #2a1e3e; color: #a060d0; }
-    .cat-연락 { background: #3a1e2a; color: #d06090; }
-    .cat-메모 { background: #1e1e2e; color: #8888aa; }
-    .cat-기타 { background: #1e1e2e; color: #8888aa; }
+    .preview-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+    .badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 500; }
+    /* Area badges */
+    .area-병원 { background: #1e2a3e; color: #6090d0; }
+    .area-개인업무 { background: #1e3a2e; color: #60c080; }
+    .area-개인생활 { background: #2e2a1e; color: #c0a040; }
+    /* Department badges */
+    .dept-진료실 { background: #1e2a3e; color: #70a0e0; }
+    .dept-데스크 { background: #2a1e3e; color: #a070d0; }
+    .dept-기공실 { background: #2a2a1e; color: #a09060; }
+    .dept-마케팅 { background: #3a1e2a; color: #d070a0; }
+    .dept-경영 { background: #3a1e1e; color: #d07070; }
+    .dept-개발 { background: #1e3a2e; color: #60c080; }
+    .dept-학습 { background: #2e2e1e; color: #b0b040; }
+    .dept-건강 { background: #2a2a1e; color: #c0a040; }
+    .dept-가족 { background: #1e1e2e; color: #9090b0; }
+    .dept-기타 { background: #1e1e2e; color: #8888aa; }
+    /* Type badges */
+    .type-할일 { background: #3a1e1e; color: #d07070; }
+    .type-일정 { background: #1e2a3e; color: #6090d0; }
+    .type-아이디어 { background: #2e2e1e; color: #c0b040; }
     .preview-content { font-size: 0.85rem; color: #9090b0; line-height: 1.5; margin-top: 4px; }
     .preview-actions { display: flex; gap: 8px; margin-top: 14px; }
     .btn-save {
@@ -88,6 +101,7 @@
       background: #151520; border: 1px solid #222235; border-radius: 10px;
       padding: 12px 14px; display: flex; align-items: center; gap: 10px;
     }
+    .saved-item-badges { display: flex; flex-direction: column; gap: 3px; flex-shrink: 0; }
     .saved-item-text { flex: 1; }
     .saved-item-title { font-size: 0.88rem; color: #c8c8e0; font-weight: 500; }
     .saved-item-meta { font-size: 0.75rem; color: #44446a; margin-top: 2px; }
@@ -113,7 +127,7 @@
     </div>
     <div class="preview-row">
       <span class="preview-label">분류</span>
-      <span id="prevCategory" class="category-badge"></span>
+      <div id="prevBadges" class="preview-badges"></div>
     </div>
     <div id="prevContent" class="preview-content"></div>
     <div class="preview-actions">
@@ -138,7 +152,7 @@
     const processing = document.getElementById('processing');
     const preview = document.getElementById('preview');
     const prevTitle = document.getElementById('prevTitle');
-    const prevCategory = document.getElementById('prevCategory');
+    const prevBadges = document.getElementById('prevBadges');
     const prevContent = document.getElementById('prevContent');
     const saveBtn = document.getElementById('saveBtn');
     const discardBtn = document.getElementById('discardBtn');
@@ -192,7 +206,14 @@
         });
         if (!res.ok) throw new Error();
         const data = await res.json();
-        currentData = { title: data.title, category: data.category, content: data.summary || text, original: text };
+        currentData = {
+          title: data.title,
+          area: data.area,
+          department: data.department,
+          type: data.type,
+          content: data.summary || text,
+          original: text
+        };
         showPreview(currentData);
       } catch {
         currentData = { ...localClassify(text), original: text };
@@ -202,8 +223,11 @@
 
     function showPreview(data) {
       prevTitle.textContent = data.title;
-      prevCategory.textContent = data.category;
-      prevCategory.className = `category-badge cat-${data.category}`;
+      prevBadges.innerHTML = `
+        <span class="badge area-${data.area}">${data.area}</span>
+        <span class="badge dept-${data.department}">${data.department}</span>
+        <span class="badge type-${data.type}">${data.type}</span>
+      `;
       prevContent.textContent = data.content;
       preview.style.display = 'block';
     }
@@ -214,7 +238,14 @@
       try {
         const res = await fetch(`${API_BASE}/notion`, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title: currentData.title, category: currentData.category, content: currentData.content, status: '신규' })
+          body: JSON.stringify({
+            title: currentData.title,
+            area: currentData.area,
+            department: currentData.department,
+            type: currentData.type,
+            content: currentData.content,
+            status: '신규'
+          })
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error);
@@ -240,10 +271,13 @@
       listLabel.style.display = 'block';
       savedList.innerHTML = savedItems.slice(0, 10).map(item => `
         <div class="saved-item">
-          <div><span class="category-badge cat-${item.category}" style="font-size:0.7rem;padding:1px 8px;">${item.category}</span></div>
+          <div class="saved-item-badges">
+            <span class="badge area-${item.area || ''}" style="font-size:0.68rem;padding:1px 7px;">${item.area || item.category || ''}</span>
+            <span class="badge type-${item.type || ''}" style="font-size:0.68rem;padding:1px 7px;">${item.type || ''}</span>
+          </div>
           <div class="saved-item-text">
             <div class="saved-item-title">${item.title}</div>
-            <div class="saved-item-meta">${item.date}</div>
+            <div class="saved-item-meta">${item.department ? item.department + ' · ' : ''}${item.date}</div>
           </div>
         </div>`).join('');
     }
@@ -251,13 +285,39 @@
     function showToast(msg) { toast.textContent = msg; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2800); }
 
     function localClassify(text) {
-      let category = '메모';
-      if (/해야|하기|할것|처리|완료|끝내|마무리|제출|보내|수정|확인해/.test(text)) category = '할일';
-      else if (/시|분|날|일정|약속|미팅|회의|방문|예약|언제|다음주|오늘|내일|모레/.test(text)) category = '일정';
-      else if (/아이디어|생각|기획|개선|제안|어떨까|만들면/.test(text)) category = '아이디어';
-      else if (/사야|구매|주문|장보기|쇼핑|필요한|사다/.test(text)) category = '쇼핑';
-      else if (/전화|문자|연락|답장|카톡|메시지/.test(text)) category = '연락';
-      return { title: text.length > 20 ? text.slice(0, 20) + '...' : text, category, content: text };
+      let area = '병원', department = '기타', type = '할일';
+
+      if (/진료|환자|치료|발치|임플란트|보철|스케일링|충치|크라운|틀니|교정|신경치료/.test(text)) {
+        area = '병원'; department = '진료실';
+      } else if (/접수|수납|예약|보험|청구|데스크|전화/.test(text)) {
+        area = '병원'; department = '데스크';
+      } else if (/기공|보철물|왁스|인상|모형|지르코니아/.test(text)) {
+        area = '병원'; department = '기공실';
+      } else if (/마케팅|광고|SNS|블로그|홍보|이벤트|캠페인/.test(text)) {
+        area = '병원'; department = '마케팅';
+      } else if (/매출|인건비|급여|채용|퇴사|계약|경영|회계|세무/.test(text)) {
+        area = '병원'; department = '경영';
+      } else if (/코딩|개발|코드|배포|API|서버|프로그래밍|앱|웹|GitHub/.test(text)) {
+        area = '개인업무'; department = '개발';
+      } else if (/공부|강의|세미나|학회|논문|자격증|수업/.test(text)) {
+        area = '개인업무'; department = '학습';
+      } else if (/운동|헬스|건강|검진|약/.test(text)) {
+        area = '개인생활'; department = '건강';
+      } else if (/가족|아이|아내|부모|집/.test(text)) {
+        area = '개인생활'; department = '가족';
+      } else if (/쇼핑|구매|주문|사야|장보기/.test(text)) {
+        area = '개인생활'; department = '기타';
+      }
+
+      if (/일정|약속|미팅|회의|방문|예약|다음주|오늘|내일|모레|시에|시반/.test(text)) {
+        type = '일정';
+      } else if (/아이디어|생각|기획|개선|제안|어떨까|만들면|해보면/.test(text)) {
+        type = '아이디어';
+      } else {
+        type = '할일';
+      }
+
+      return { title: text.length > 20 ? text.slice(0, 20) + '...' : text, area, department, type, content: text };
     }
 
     renderList();
