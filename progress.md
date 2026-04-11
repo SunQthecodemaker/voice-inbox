@@ -17,11 +17,12 @@
 ## 핵심 정보
 - **Supabase Project ID**: chnqtrmlglqdmzqwsazm
 - **Edge Function URL**: https://chnqtrmlglqdmzqwsazm.supabase.co/functions/v1/voice-inbox
-- **Edge Function 버전**: v4 (MiniMax M2.7 연동, JWT 비활성화)
+- **Edge Function 버전**: v5 (MiniMax M2.7 연동, 3단계 분류, JWT 비활성화)
 - **AI 모델**: MiniMax M2.7 (API key 코드 내장)
 - **Notion DB ID**: 337f3e715c448015b711cdb3e15b3416
-- **Notion 컬럼**: 제목 / 분류 / 내용 / 날짜 / 상태
-- **GitHub**: SunQthecodemaker/dental-ai-coder (main 브랜치)
+- **Notion 컬럼**: 제목 / 영역 / 부서 / 유형 / 내용 / 날짜 / 상태
+- **GitHub**: SunQthecodemaker/voice-inbox (main 브랜치)
+- **사이트 URL**: https://sunqthecodemaker.github.io/voice-inbox/
 - **Cloudflare Worker**: https://voice-inbox.sunq818.workers.dev (구버전, 폐기 예정)
 
 ## 완료된 작업
@@ -49,7 +50,12 @@
 ### Step 3. GitHub Pages 활성화 ✅
 - [x] 레포를 public으로 변경
 - [x] GitHub Pages 설정 (main 브랜치, / root)
-- [x] 사이트 URL: https://sunqthecodemaker.github.io/dental-ai-coder/voice-inbox.html
+- [x] 사이트 URL: https://sunqthecodemaker.github.io/voice-inbox/
+
+### Step 4. 분류 체계 재설계 ✅ (2026-04-11)
+- [x] Notion DB: 영역/부서/유형 3단계 분류로 변경
+- [x] Edge Function v5: AI 프롬프트 재작성 (병원/개인업무/개인생활 분류)
+- [x] 프론트엔드: 배지 3개 표시 (영역/부서/유형)
 
 ### Step 4. 정리 (선택)
 - [ ] Cloudflare Worker 백업 또는 삭제 결정
