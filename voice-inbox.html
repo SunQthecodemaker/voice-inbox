@@ -56,7 +56,7 @@
     .area-병원 { background: #1e2a3e; color: #6090d0; }
     .area-개인업무 { background: #1e3a2e; color: #60c080; }
     .area-개인생활 { background: #2e2a1e; color: #c0a040; }
-    /* Department badges */
+    /* 항목 badges */
     .dept-진료실 { background: #1e2a3e; color: #70a0e0; }
     .dept-데스크 { background: #2a1e3e; color: #a070d0; }
     .dept-기공실 { background: #2a2a1e; color: #a09060; }
@@ -66,6 +66,7 @@
     .dept-학습 { background: #2e2e1e; color: #b0b040; }
     .dept-건강 { background: #2a2a1e; color: #c0a040; }
     .dept-가족 { background: #1e1e2e; color: #9090b0; }
+    .dept-강의준비 { background: #2e1e3a; color: #b080d0; }
     .dept-기타 { background: #1e1e2e; color: #8888aa; }
     /* Type badges */
     .type-할일 { background: #3a1e1e; color: #d07070; }
@@ -299,6 +300,8 @@
         area = '병원'; department = '경영';
       } else if (/코딩|개발|코드|배포|API|서버|프로그래밍|앱|웹|GitHub/.test(text)) {
         area = '개인업무'; department = '개발';
+      } else if (/강의준비|강의자료|PPT|발표자료|슬라이드|교안|수업준비/.test(text)) {
+        area = '개인업무'; department = '강의준비';
       } else if (/공부|강의|세미나|학회|논문|자격증|수업/.test(text)) {
         area = '개인업무'; department = '학습';
       } else if (/운동|헬스|건강|검진|약/.test(text)) {
