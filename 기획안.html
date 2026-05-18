@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>voice-inbox 옵시디언 통합 기획안 v0.1</title>
+<style>
+  :root {
+    --bg: #0f0f13;
+    --bg-card: #1a1a28;
+    --bg-card-2: #151520;
+    --border: #2a2a40;
+    --border-strong: #3a3a60;
+    --text: #e8e8f0;
+    --text-dim: #9090b0;
+    --text-faint: #555578;
+    --accent: #8888cc;
+    --accent-blue: #6090d0;
+    --accent-green: #60c080;
+    --accent-yellow: #c0a040;
+    --accent-purple: #b080d0;
+    --accent-red: #d07070;
+    --ok: #60c080;
+    --warn: #c0a040;
+    --pending: #d07070;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.55;
+    padding: 32px 20px; max-width: 1100px; margin: 0 auto;
+  }
+  h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.3px; color: #d8d8f0; margin-bottom: 6px; }
+  h2 {
+    font-size: 1.05rem; font-weight: 600; color: var(--accent); margin: 36px 0 14px;
+    padding-bottom: 8px; border-bottom: 1px solid var(--border); letter-spacing: -0.2px;
+  }
+  h3 { font-size: 0.92rem; font-weight: 600; color: #c8c8e0; margin: 18px 0 8px; }
+  .subtitle { color: var(--text-faint); font-size: 0.85rem; margin-bottom: 24px; }
+  .summary-bar {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 20px 0;
+  }
+  .summary-cell {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 14px;
+  }
+  .summary-cell .label { font-size: 0.7rem; color: var(--text-faint); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 4px; }
+  .summary-cell .value { font-size: 0.9rem; color: var(--text); font-weight: 500; }
+  .card {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 18px 22px; margin-bottom: 16px;
+  }
+  .card-2 {
+    background: var(--bg-card-2); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 18px;
+  }
+  .pain-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .pain {
+    background: var(--bg-card-2); border-left: 3px solid var(--accent-red);
+    padding: 12px 16px; border-radius: 8px;
+  }
+  .pain .pain-title { color: var(--accent-red); font-weight: 600; font-size: 0.88rem; margin-bottom: 6px; }
+  .pain .pain-body { color: var(--text-dim); font-size: 0.82rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--border); }
+  th { color: var(--text-dim); font-weight: 600; font-size: 0.78rem; letter-spacing: 0.3px; text-transform: uppercase; }
+  td { color: var(--text); vertical-align: top; }
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.72rem; font-weight: 500;
+  }
+  .b-ok { background: rgba(96,192,128,0.15); color: var(--ok); }
+  .b-warn { background: rgba(192,160,64,0.15); color: var(--warn); }
+  .b-pending { background: rgba(208,112,112,0.15); color: var(--pending); }
+  .b-area { background: rgba(96,144,208,0.15); color: var(--accent-blue); }
+  .b-tag { background: rgba(176,128,208,0.15); color: var(--accent-purple); }
+  /* Architecture diagram */
+  .arch {
+    display: flex; flex-direction: column; gap: 14px; align-items: center; padding: 18px 0;
+  }
+  .arch-row { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; justify-content: center; }
+  .arch-box {
+    background: var(--bg-card-2); border: 1px solid var(--border-strong); border-radius: 10px;
+    padding: 12px 18px; min-width: 160px; text-align: center;
+    font-size: 0.85rem; color: var(--text);
+  }
+  .arch-box.input { border-color: rgba(96,144,208,0.6); color: var(--accent-blue); }
+  .arch-box.proc { border-color: rgba(176,128,208,0.6); color: var(--accent-purple); }
+  .arch-box.store { border-color: rgba(96,192,128,0.6); color: var(--accent-green); }
+  .arch-box.client { border-color: rgba(192,160,64,0.6); color: var(--accent-yellow); }
+  .arch-box .sub { display: block; font-size: 0.72rem; color: var(--text-faint); margin-top: 4px; }
+  .arrow { color: var(--text-faint); font-size: 1.2rem; }
+  .arrow-v { color: var(--text-faint); font-size: 1.2rem; line-height: 0.8; }
+  /* Code-like */
+  .code {
+    background: #0a0a12; border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px 14px; font-family: 'Consolas', 'Cascadia Code', monospace;
+    font-size: 0.78rem; color: #c0c0d8; white-space: pre; overflow-x: auto;
+  }
+  .code .key { color: var(--accent-blue); }
+  .code .str { color: var(--accent-green); }
+  .code .comment { color: var(--text-faint); font-style: italic; }
+  /* UI mock */
+  .ui-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .ui-mock {
+    background: var(--bg-card-2); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .ui-mock .ui-label { font-size: 0.7rem; color: var(--text-faint); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .ui-select {
+    display: inline-block; background: var(--bg-card); border: 1px solid var(--border-strong);
+    border-radius: 14px; padding: 3px 12px 3px 10px; font-size: 0.78rem; margin: 2px 4px 2px 0;
+    color: var(--text);
+  }
+  .ui-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: rgba(176,128,208,0.12); border: 1px solid rgba(176,128,208,0.3);
+    border-radius: 14px; padding: 3px 6px 3px 10px; font-size: 0.78rem; margin: 2px 4px 2px 0;
+    color: var(--accent-purple);
+  }
+  .ui-chip .x { color: var(--text-faint); cursor: pointer; }
+  .ui-add {
+    display: inline-block; border: 1px dashed var(--border-strong); border-radius: 14px;
+    padding: 3px 10px; font-size: 0.78rem; color: var(--text-faint); margin: 2px 4px 2px 0;
+  }
+  /* Workflow timeline */
+  .workflow { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .wf {
+    background: var(--bg-card-2); border-top: 3px solid var(--accent); border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .wf .wf-title { font-weight: 600; color: var(--accent); font-size: 0.88rem; margin-bottom: 6px; }
+  .wf .wf-body { font-size: 0.8rem; color: var(--text-dim); }
+  /* Phase */
+  .phase-row { display: flex; gap: 12px; align-items: stretch; }
+  .phase {
+    flex: 1; background: var(--bg-card-2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px;
+  }
+  .phase .ph-num {
+    display: inline-block; width: 22px; height: 22px; border-radius: 50%;
+    background: var(--accent); color: #0f0f13; font-weight: 700; font-size: 0.78rem;
+    text-align: center; line-height: 22px; margin-right: 8px;
+  }
+  .phase .ph-title { font-weight: 600; color: var(--text); font-size: 0.9rem; margin-bottom: 8px; }
+  .phase .ph-list { font-size: 0.8rem; color: var(--text-dim); padding-left: 18px; }
+  .phase .ph-list li { margin-bottom: 4px; }
+  /* Decision pending */
+  .pending-list {
+    background: rgba(208,112,112,0.06); border: 1px solid rgba(208,112,112,0.25);
+    border-radius: 10px; padding: 14px 18px;
+  }
+  .pending-list .q { font-size: 0.88rem; color: var(--text); margin-bottom: 10px; }
+  .pending-list .q::before { content: "❓ "; color: var(--pending); }
+  ul { padding-left: 22px; color: var(--text-dim); font-size: 0.88rem; }
+  ul li { margin-bottom: 4px; }
+  .small { font-size: 0.78rem; color: var(--text-faint); }
+  .check { color: var(--ok); font-weight: 700; }
+  .cross { color: var(--pending); font-weight: 700; }
+  hr { border: 0; border-top: 1px solid var(--border); margin: 28px 0; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  @media (max-width: 768px) {
+    .summary-bar { grid-template-columns: 1fr 1fr; }
+    .pain-grid, .workflow, .ui-compare { grid-template-columns: 1fr; }
+    .phase-row { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<h1>voice-inbox 옵시디언 통합 기획안 v0.1</h1>
+<div class="subtitle">2026-05-18 · 사용자: 원장(치과) · 핵심 페인 = 활용도 저하 + 분류 폐쇄성</div>
+
+<div class="summary-bar">
+  <div class="summary-cell"><div class="label">정본 저장소</div><div class="value">옵시디언 vault</div></div>
+  <div class="summary-cell"><div class="label">위치</div><div class="value">\\Sunq\sunq\vault\inbox\</div></div>
+  <div class="summary-cell"><div class="label">분류 모델</div><div class="value">영역 1축 + 자유 태그</div></div>
+  <div class="summary-cell"><div class="label">동기화</div><div class="value">Synology Drive (운영 중)</div></div>
+</div>
+
+<h2>1. 현재 흐름과 페인포인트</h2>
+
+<div class="card">
+  <h3>현재 아키텍처</h3>
+  <div class="arch">
+    <div class="arch-row">
+      <div class="arch-box input">보이스/텍스트 입력<span class="sub">voice-inbox.html</span></div>
+      <span class="arrow">→</span>
+      <div class="arch-box proc">Supabase Edge Function v5<span class="sub">MiniMax M2.7 분류</span></div>
+      <span class="arrow">→</span>
+      <div class="arch-box store">Notion DB<span class="sub">337f3e71... 평면 누적</span></div>
+    </div>
+  </div>
+  <h3>페인포인트 (사용자 답변 기반)</h3>
+  <div class="pain-grid">
+    <div class="pain">
+      <div class="pain-title">검색·재발견 약함</div>
+      <div class="pain-body">분류 라벨이 붙은 채 Notion 에 쌓이기만 함. 다시 꺼내 보는 트리거·동선이 없어 활용 0</div>
+    </div>
+    <div class="pain">
+      <div class="pain-title">아이디어 발전 안 됨</div>
+      <div class="pain-body">단발 메모로 끝남. 같은 주제 메모끼리 연결·확장하는 가공면 부재</div>
+    </div>
+    <div class="pain">
+      <div class="pain-title">분류 사전이 폐쇄형</div>
+      <div class="pain-body">영역×항목×유형이 고정 셀렉트. 메모 내용이 사전을 안 따라가면 '기타' 떨어짐 → '기타'가 쌓이면 영영 못 찾음</div>
+    </div>
+  </div>
+</div>
+
+<h2>2. 확정된 결정</h2>
+
+<table>
+  <thead><tr><th style="width:24%">항목</th><th style="width:40%">결정</th><th>이유</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>저장소 정본</td>
+      <td><span class="badge b-ok">옵시디언 vault</span> 단독</td>
+      <td>검색·재발견 + 아이디어 발전 페인 둘 다 옵시디언 강점에 매핑됨. Notion 평면 DB 의 한계가 페인 자체</td>
+    </tr>
+    <tr>
+      <td>vault 위치</td>
+      <td><code>\\Sunq\sunq\vault\inbox\</code></td>
+      <td>이미 운영 중인 vault. Synology Drive 동기화로 멀티 PC·모바일 sync 완비</td>
+    </tr>
+    <tr>
+      <td>분류 모델</td>
+      <td><span class="b-area badge">영역 1축 고정</span> + <span class="b-tag badge">자유 태그</span></td>
+      <td>영역 3개(병원·개인업무·개인생활)는 MOC·회고 뷰 분리에 진짜 필요한 축. 항목·유형은 메모 내용 따라 자유롭게 자라남</td>
+    </tr>
+    <tr>
+      <td>vault 쓰기 통로</td>
+      <td>NAS WebDAV (Edge Function → vault)</td>
+      <td>DB 는 NAS 이용 OK 라는 사용자 결정. GitHub 경유 제외. 인증서·포트포워딩 이미 준비됨 (sunq818.synology.me)</td>
+    </tr>
+    <tr>
+      <td>GitHub 경유</td>
+      <td><span class="cross">✗ 안 함</span></td>
+      <td>사용자 명시 거부</td>
+    </tr>
+    <tr>
+      <td>Notion 처리</td>
+      <td><span class="badge b-ok">즉시 폐기</span></td>
+      <td>"역할이 단지 백업이라면 굳이 필요 없음" — 사용자 결정 (2026-05-18). 기존 메모는 필요 시 1회성 export 로 vault 이관</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>3. 새 아키텍처</h2>
+
+<div class="card">
+  <div class="arch">
+    <div class="arch-row">
+      <div class="arch-box input">보이스/텍스트 입력<span class="sub">voice-inbox.html (모바일·PC)</span></div>
+      <span class="arrow">→</span>
+      <div class="arch-box proc">Edge Function<span class="sub">MiniMax 분류 + 자유 태그 N개</span></div>
+    </div>
+    <span class="arrow-v">↓</span>
+    <div class="arch-row">
+      <div class="arch-box store">NAS WebDAV<br>vault\inbox\<span class="sub">.md 파일 1개씩 PUT</span></div>
+    </div>
+    <span class="arrow-v">↓</span>
+    <div class="arch-row">
+      <div class="arch-box client">옵시디언 PC<span class="sub">Synology Drive sync</span></div>
+      <div class="arch-box client">옵시디언 모바일<span class="sub">같은 vault 자동 sync</span></div>
+    </div>
+  </div>
+  <p class="small" style="text-align:center; margin-top:10px;">
+    분류 사전 캐시: Edge Function 이 vault 의 기존 태그 목록을 주기적으로 읽어 AI 프롬프트에 컨텍스트로 주입 → 동의어 폭주 방지
+  </p>
+</div>
+
+<h2>4. 데이터 모델</h2>
+
+<div class="card">
+  <h3>파일 1개 = 메모 1개</h3>
+  <ul>
+    <li>파일명: <code>2026-05-18 1432 - 임플란트 상담 매뉴얼 다듬기.md</code></li>
+    <li>위치: <code>vault\inbox\</code> — 폴더 분류 안 함 (자유 태그가 분류 역할)</li>
+    <li>가공 후 이동: 사용자가 옵시디언에서 처리하면서 적절한 영역 폴더로 옮김 (선택사항)</li>
+  </ul>
+  <h3>frontmatter 스키마</h3>
+  <div class="code">---
+<span class="key">area</span>: <span class="str">병원</span>            <span class="comment"># 3개 고정: 병원 / 개인업무 / 개인생활</span>
+<span class="key">tags</span>:                <span class="comment"># AI 자유 제안 + 사용자 즉석 편집</span>
+  - <span class="str">진료실</span>
+  - <span class="str">임플란트 상담</span>
+  - <span class="str">할일</span>
+<span class="key">status</span>: <span class="str">신규</span>         <span class="comment"># 신규 / 처리중 / 완료 / 보관</span>
+<span class="key">created</span>: <span class="str">2026-05-18T14:32:00+09:00</span>
+<span class="key">source</span>: <span class="str">voice</span>        <span class="comment"># voice / text</span>
+---
+
+원본 텍스트가 본문 첫 줄에...
+(AI 가 만든 요약은 두 번째 단락)</div>
+</div>
+
+<h2>5. UI 변경</h2>
+
+<div class="ui-compare">
+  <div class="ui-mock">
+    <div class="ui-label">현재 (폐쇄형 select)</div>
+    <div>
+      <span class="ui-select">병원 ▾</span>
+      <span class="ui-select">진료실 ▾</span>
+      <span class="ui-select">할일 ▾</span>
+    </div>
+    <p class="small" style="margin-top:10px;">사전에 없으면 '기타' 강제. 새 분류 못 만듦</p>
+  </div>
+  <div class="ui-mock">
+    <div class="ui-label">변경 (영역 select + 자유 태그 chip)</div>
+    <div>
+      <span class="ui-select">병원 ▾</span>
+    </div>
+    <div style="margin-top:8px;">
+      <span class="ui-chip">진료실 <span class="x">×</span></span>
+      <span class="ui-chip">임플란트 상담 <span class="x">×</span></span>
+      <span class="ui-chip">할일 <span class="x">×</span></span>
+      <span class="ui-add">+ 태그</span>
+    </div>
+    <p class="small" style="margin-top:10px;">AI 제안 + 자동완성 + 즉석 추가·삭제·수정</p>
+  </div>
+</div>
+
+<h2>6. 활용 워크플로우 (도구 깐다고 활용 안 됨 — 운영 흐름이 본질)</h2>
+
+<div class="workflow">
+  <div class="wf">
+    <div class="wf-title">매일</div>
+    <div class="wf-body">데일리 노트 열면 오늘 inbox 메모 자동 표시 (Dataview 쿼리). 처리 가능한 할일은 그 자리에서 체크</div>
+  </div>
+  <div class="wf">
+    <div class="wf-title">매주 일요일</div>
+    <div class="wf-body">위클리 노트에 지난주 아이디어·할일 자동 집계. "발전된 것 / 처리된 것 / 묵힌 것" 분류 → 묵힌 건 의식적으로 폐기 or 발전</div>
+  </div>
+  <div class="wf">
+    <div class="wf-title">월간</div>
+    <div class="wf-body">영역별 MOC 훑어 처리 안 된 메모 정리. 새로 등장한 태그가 일정 빈도 넘으면 정식 항목화</div>
+  </div>
+</div>
+
+<h2>7. 실행 Phase</h2>
+
+<div class="phase-row">
+  <div class="phase">
+    <div class="ph-title"><span class="ph-num">1</span>백엔드 전환</div>
+    <ul class="ph-list">
+      <li>Edge Function 의 <code>/notion</code> 제거 → <code>/vault</code> 신설 (WebDAV PUT)</li>
+      <li>WebDAV 자격증명 secrets.json 영속화</li>
+      <li>frontmatter·파일명 생성 로직</li>
+      <li><strong>오픈채팅정리 패턴 차용</strong> (vault append 운영 관습 동일)</li>
+      <li>기존 Notion DB 메모: 필요 시 1회성 export 로 vault 이관 (별도 작업)</li>
+    </ul>
+  </div>
+  <div class="phase">
+    <div class="ph-title"><span class="ph-num">2</span>분류·UI 개편</div>
+    <ul class="ph-list">
+      <li>AI 프롬프트: 자유 태그 N개 + 기존 태그 우선 재사용 가이드</li>
+      <li>vault 기존 태그 캐시 (Edge Function 주기 fetch)</li>
+      <li>미리보기 UI: select 1개 + chip 자동완성</li>
+      <li>저장 시 옵시디언 frontmatter 로 변환</li>
+    </ul>
+  </div>
+  <div class="phase">
+    <div class="ph-title"><span class="ph-num">3</span>옵시디언 측 셋업</div>
+    <ul class="ph-list">
+      <li>영역별 MOC 노트 3개 (Dataview 쿼리)</li>
+      <li>데일리·위클리 노트 템플릿 (Templater)</li>
+      <li>처리 상태 워크플로우 (신규→처리중→완료)</li>
+      <li>모바일에서 inbox 확인 흐름 검증</li>
+    </ul>
+  </div>
+</div>
+
+<h2>8. 결정 완료 / 이관</h2>
+
+<div class="card">
+  <ul>
+    <li><span class="check">✓</span> <strong>Notion 처리</strong> &mdash; 즉시 폐기 (2026-05-18 사용자 결정). Phase 1 에 반영됨</li>
+    <li><span class="check">✓</span> <strong>메모리 시스템 대책</strong> &mdash; 별도 세션·별도 폴더 <code>Z:\web\메모리시스템\</code> 에서 처리 (이번 기획안 범위 밖). <a href="../메모리시스템/멍청이.md">멍청이.md</a> 이관 완료</li>
+  </ul>
+</div>
+
+<hr>
+
+<h2>부록. 관련 자료</h2>
+
+<ul>
+  <li><a href="../메모리시스템/멍청이.md">메모리시스템/멍청이.md</a> — 인지 실패 사례 히스토리 (별도 폴더 이관 완료)</li>
+  <li><a href="../.claude-memory/sunq설정.md">sunq설정.md</a> L545 — /옵시 슬래시 정의</li>
+  <li><a href="../.claude-memory/handoff/DESKTOP-N9UPRG7_20260516-0943_ns.md">오픈채팅정리 vault append 패턴</a> — voice-inbox 가 차용할 reference</li>
+  <li><a href="../.claude-memory/reference_nas_infrastructure.md">reference_nas_infrastructure.md</a> — WebDAV·인증서·포트포워딩 정본</li>
+  <li><a href="voice-inbox.html">voice-inbox.html</a> — 현재 앱 (변경 대상)</li>
+  <li><a href="progress.md">progress.md</a> — 현재 백엔드·DB 상태</li>
+</ul>
+
+<p class="small" style="text-align:center; margin-top:32px; color:var(--text-faint);">
+  v0.2 · 2026-05-18 · 모든 핵심 결정 확정 → 다음 사이클: Phase 1 (Edge Function /vault 신설) 실행 단계 구체화
+</p>
+
+</body>
+</html>
