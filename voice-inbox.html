@@ -47,60 +47,67 @@
       width: 100%; max-width: 480px; background: #1a1a28; border: 1px solid #2a2a40;
       border-radius: 14px; padding: 18px 20px; margin-bottom: 20px; display: none;
     }
-    .preview-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-    .preview-label { font-size: 0.72rem; color: #555578; width: 32px; flex-shrink: 0; }
-    .preview-title { font-size: 1rem; font-weight: 600; color: #d8d8f0; }
-    .preview-badges { display: flex; gap: 6px; flex-wrap: wrap; }
-    .badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 500; }
-    .badge-select {
-      padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 500;
-      border: none; cursor: pointer; appearance: none; -webkit-appearance: none;
-      outline: none; font-family: inherit;
-      padding-right: 22px;
-      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'><path fill='%23888' d='M2 4l3 3 3-3z'/></svg>");
-      background-repeat: no-repeat; background-position: right 6px center;
-    }
-    .badge-select:focus { box-shadow: 0 0 0 2px rgba(120,120,200,0.3); }
-    .badge-select option { background: #1a1a28; color: #e8e8f0; }
+    .preview-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .preview-row.top-align { align-items: flex-start; }
+    .preview-label { font-size: 0.72rem; color: #555578; width: 32px; flex-shrink: 0; padding-top: 4px; }
+    .preview-title { font-size: 1rem; font-weight: 600; color: #d8d8f0; flex: 1; }
     .preview-title[contenteditable="true"] {
       outline: none; padding: 2px 6px; margin: -2px -6px; border-radius: 6px;
       transition: background 0.15s; cursor: text;
     }
     .preview-title[contenteditable="true"]:hover { background: #22223a; }
     .preview-title[contenteditable="true"]:focus { background: #22223a; box-shadow: 0 0 0 1px #4a4a80; }
-    .preview-content[contenteditable="true"] {
-      outline: none; padding: 4px 6px; margin: 0 -6px; border-radius: 6px;
+    .preview-content {
+      font-size: 0.85rem; color: #9090b0; line-height: 1.5;
+      outline: none; padding: 6px 8px; margin: 0 -8px; border-radius: 6px;
       transition: background 0.15s; cursor: text;
+      white-space: pre-wrap;
     }
     .preview-content[contenteditable="true"]:hover { background: #22223a; }
     .preview-content[contenteditable="true"]:focus { background: #22223a; box-shadow: 0 0 0 1px #4a4a80; }
-    /* Area badges */
-    .area-병원 { background: #1e2a3e; color: #6090d0; }
-    .area-개인업무 { background: #1e3a2e; color: #60c080; }
-    .area-개인생활 { background: #2e2a1e; color: #c0a040; }
-    /* 항목 badges */
-    .dept-진료실 { background: #1e2a3e; color: #70a0e0; }
-    .dept-데스크 { background: #2a1e3e; color: #a070d0; }
-    .dept-기공실 { background: #2a2a1e; color: #a09060; }
-    .dept-마케팅 { background: #3a1e2a; color: #d070a0; }
-    .dept-경영 { background: #3a1e1e; color: #d07070; }
-    .dept-개발 { background: #1e3a2e; color: #60c080; }
-    .dept-학습 { background: #2e2e1e; color: #b0b040; }
-    .dept-건강 { background: #2a2a1e; color: #c0a040; }
-    .dept-가족 { background: #1e1e2e; color: #9090b0; }
-    .dept-강의준비 { background: #2e1e3a; color: #b080d0; }
-    .dept-기타 { background: #1e1e2e; color: #8888aa; }
-    /* Type badges */
-    .type-할일 { background: #3a1e1e; color: #d07070; }
-    .type-일정 { background: #1e2a3e; color: #6090d0; }
-    .type-아이디어 { background: #2e2e1e; color: #c0b040; }
-    .preview-content { font-size: 0.85rem; color: #9090b0; line-height: 1.5; margin-top: 4px; }
-    .preview-actions { display: flex; gap: 8px; margin-top: 14px; }
+
+    /* Area select */
+    .area-select {
+      appearance: none; -webkit-appearance: none; outline: none; cursor: pointer;
+      border: none; border-radius: 14px; padding: 4px 22px 4px 12px;
+      font-size: 0.78rem; font-weight: 500; font-family: inherit;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'><path fill='%23888' d='M2 4l3 3 3-3z'/></svg>");
+      background-repeat: no-repeat; background-position: right 6px center;
+    }
+    .area-select:focus { box-shadow: 0 0 0 2px rgba(120,120,200,0.3); }
+    .area-select option { background: #1a1a28; color: #e8e8f0; }
+    .area-병원 { background-color: #1e2a3e; color: #6090d0; }
+    .area-개인업무 { background-color: #1e3a2e; color: #60c080; }
+    .area-개인생활 { background-color: #2e2a1e; color: #c0a040; }
+
+    /* Tag chips */
+    .tags-wrap { display: flex; flex-wrap: wrap; gap: 6px; flex: 1; align-items: center; }
+    .tag-chip {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: rgba(176,128,208,0.12); border: 1px solid rgba(176,128,208,0.3);
+      border-radius: 14px; padding: 3px 6px 3px 12px; font-size: 0.78rem;
+      color: #b080d0;
+    }
+    .tag-chip-x {
+      color: #6a6a8a; cursor: pointer; padding: 0 4px; font-weight: 400;
+      line-height: 1; user-select: none;
+    }
+    .tag-chip-x:hover { color: #d07070; }
+    .tag-add-input {
+      background: transparent; border: 1px dashed #44446a; border-radius: 14px;
+      padding: 3px 10px; font-size: 0.78rem; color: #e8e8f0;
+      outline: none; min-width: 80px; max-width: 140px; font-family: inherit;
+    }
+    .tag-add-input::placeholder { color: #44446a; }
+    .tag-add-input:focus { border-color: #6a6a8a; border-style: solid; }
+
+    .preview-actions { display: flex; gap: 8px; margin-top: 16px; }
     .btn-save {
       flex: 1; background: #252550; border: 1px solid #3a3a70; border-radius: 8px;
       color: #9090d0; padding: 9px; font-size: 0.85rem; cursor: pointer; transition: background 0.2s;
     }
     .btn-save:hover { background: #2e2e60; }
+    .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
     .btn-discard {
       background: #1e1e2e; border: 1px solid #2a2a40; border-radius: 8px;
       color: #555578; padding: 9px 14px; font-size: 0.85rem; cursor: pointer; transition: background 0.2s;
@@ -122,12 +129,20 @@
     #savedList { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 8px; }
     .saved-item {
       background: #151520; border: 1px solid #222235; border-radius: 10px;
-      padding: 12px 14px; display: flex; align-items: center; gap: 10px;
+      padding: 12px 14px; display: flex; align-items: flex-start; gap: 10px;
     }
-    .saved-item-badges { display: flex; flex-direction: column; gap: 3px; flex-shrink: 0; }
-    .saved-item-text { flex: 1; }
-    .saved-item-title { font-size: 0.88rem; color: #c8c8e0; font-weight: 500; }
-    .saved-item-meta { font-size: 0.75rem; color: #44446a; margin-top: 2px; }
+    .saved-item-area {
+      display: inline-block; padding: 2px 9px; border-radius: 12px;
+      font-size: 0.7rem; font-weight: 500; flex-shrink: 0; margin-top: 2px;
+    }
+    .saved-item-text { flex: 1; min-width: 0; }
+    .saved-item-title { font-size: 0.88rem; color: #c8c8e0; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .saved-item-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+    .saved-item-tag {
+      font-size: 0.7rem; color: #8888aa; background: rgba(176,128,208,0.08);
+      border-radius: 8px; padding: 1px 6px;
+    }
+    .saved-item-meta { font-size: 0.72rem; color: #44446a; margin-top: 4px; }
     #noSpeech { display: none; font-size: 0.82rem; color: #555570; text-align: center; margin-bottom: 16px; }
   </style>
 </head>
@@ -149,12 +164,16 @@
       <span id="prevTitle" class="preview-title" contenteditable="true" spellcheck="false"></span>
     </div>
     <div class="preview-row">
-      <span class="preview-label">분류</span>
-      <div id="prevBadges" class="preview-badges"></div>
+      <span class="preview-label">영역</span>
+      <select id="selArea" class="area-select"></select>
+    </div>
+    <div class="preview-row top-align">
+      <span class="preview-label">태그</span>
+      <div id="tagsWrap" class="tags-wrap"></div>
     </div>
     <div id="prevContent" class="preview-content" contenteditable="true" spellcheck="false"></div>
     <div class="preview-actions">
-      <button class="btn-save" id="saveBtn">Notion에 저장</button>
+      <button class="btn-save" id="saveBtn">vault에 저장</button>
       <button class="btn-discard" id="discardBtn">취소</button>
     </div>
   </div>
@@ -164,16 +183,10 @@
 
   <script>
     const API_BASE = 'https://chnqtrmlglqdmzqwsazm.supabase.co/functions/v1/voice-inbox';
-
-    const AREA_DEPT_MAP = {
-      '병원': ['진료실', '데스크', '기공실', '마케팅', '경영', '기타'],
-      '개인업무': ['개발', '학습', '강의준비', '기타'],
-      '개인생활': ['건강', '가족', '기타']
-    };
-    const AREAS = Object.keys(AREA_DEPT_MAP);
-    const TYPES = ['할일', '일정', '아이디어'];
+    const AREAS = ['병원', '개인업무', '개인생활'];
 
     let currentData = null;
+    let currentSource = 'text';
     const savedItems = JSON.parse(localStorage.getItem('voiceInbox') || '[]');
 
     const micBtn = document.getElementById('micBtn');
@@ -183,7 +196,8 @@
     const processing = document.getElementById('processing');
     const preview = document.getElementById('preview');
     const prevTitle = document.getElementById('prevTitle');
-    const prevBadges = document.getElementById('prevBadges');
+    const selArea = document.getElementById('selArea');
+    const tagsWrap = document.getElementById('tagsWrap');
     const prevContent = document.getElementById('prevContent');
     const saveBtn = document.getElementById('saveBtn');
     const discardBtn = document.getElementById('discardBtn');
@@ -191,6 +205,9 @@
     const listLabel = document.getElementById('listLabel');
     const toast = document.getElementById('toast');
     const noSpeech = document.getElementById('noSpeech');
+
+    // Populate area select once
+    selArea.innerHTML = AREAS.map(a => `<option value="${a}">${a}</option>`).join('');
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     let recognition = null;
@@ -204,7 +221,7 @@
       recognition.onresult = (e) => {
         const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
         textInput.value = transcript;
-        if (e.results[e.results.length - 1].isFinal) { stopRecording(); processText(transcript); }
+        if (e.results[e.results.length - 1].isFinal) { stopRecording(); processText(transcript, 'voice'); }
       };
       recognition.onerror = () => { stopRecording(); micStatus.textContent = '인식 실패. 다시 시도하세요.'; };
       recognition.onend = () => { if (isRecording) stopRecording(); };
@@ -225,71 +242,87 @@
       try { recognition.stop(); } catch {}
     }
     micBtn.addEventListener('click', () => { if (isRecording) stopRecording(); else startRecording(); });
-    sendTextBtn.addEventListener('click', () => { const t = textInput.value.trim(); if (t) processText(t); });
-    textInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { const t = textInput.value.trim(); if (t) processText(t); } });
+    sendTextBtn.addEventListener('click', () => { const t = textInput.value.trim(); if (t) processText(t, 'text'); });
+    textInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { const t = textInput.value.trim(); if (t) processText(t, 'text'); } });
 
-    async function processText(text) {
+    async function processText(text, source) {
+      currentSource = source || 'text';
       processing.style.display = 'block'; preview.style.display = 'none';
       try {
         const res = await fetch(`${API_BASE}/classify`, {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ text })
         });
-        if (!res.ok) throw new Error();
+        if (!res.ok) throw new Error('classify failed');
         const data = await res.json();
         currentData = {
-          title: data.title,
-          area: data.area,
-          department: data.department,
-          type: data.type,
+          title: data.title || text.slice(0, 20),
+          area: AREAS.includes(data.area) ? data.area : '병원',
+          tags: Array.isArray(data.tags) ? data.tags.slice(0, 10) : [],
           content: data.summary || text,
-          original: text
+          original: text,
         };
-        showPreview(currentData);
+        showPreview();
       } catch {
-        currentData = { ...localClassify(text), original: text };
-        showPreview(currentData);
+        currentData = {
+          title: text.length > 20 ? text.slice(0, 20) + '...' : text,
+          area: '병원',
+          tags: [],
+          content: text,
+          original: text,
+        };
+        showPreview();
       } finally { processing.style.display = 'none'; }
     }
 
-    function showPreview(data) {
-      prevTitle.textContent = data.title;
-      prevContent.textContent = data.content;
-      renderBadgeSelectors();
+    function showPreview() {
+      prevTitle.textContent = currentData.title;
+      prevContent.textContent = currentData.content;
+      renderArea();
+      renderTags();
       preview.style.display = 'block';
     }
 
-    function renderBadgeSelectors() {
-      if (!currentData) return;
-      if (!AREAS.includes(currentData.area)) currentData.area = '병원';
-      const depts = AREA_DEPT_MAP[currentData.area];
-      if (!depts.includes(currentData.department)) currentData.department = depts[0];
-      if (!TYPES.includes(currentData.type)) currentData.type = '할일';
+    function renderArea() {
+      selArea.value = currentData.area;
+      selArea.className = 'area-select area-' + currentData.area;
+    }
+    selArea.addEventListener('change', () => {
+      currentData.area = selArea.value;
+      renderArea();
+    });
 
-      prevBadges.innerHTML = `
-        <select class="badge-select area-${currentData.area}" id="selArea">
-          ${AREAS.map(a => `<option value="${a}" ${a === currentData.area ? 'selected' : ''}>${a}</option>`).join('')}
-        </select>
-        <select class="badge-select dept-${currentData.department}" id="selDept">
-          ${depts.map(d => `<option value="${d}" ${d === currentData.department ? 'selected' : ''}>${d}</option>`).join('')}
-        </select>
-        <select class="badge-select type-${currentData.type}" id="selType">
-          ${TYPES.map(t => `<option value="${t}" ${t === currentData.type ? 'selected' : ''}>${t}</option>`).join('')}
-        </select>
-      `;
+    function renderTags() {
+      const chips = currentData.tags.map((tag, i) =>
+        `<span class="tag-chip" data-i="${i}">${escapeHtml(tag)}<span class="tag-chip-x" data-i="${i}">×</span></span>`
+      ).join('');
+      tagsWrap.innerHTML = chips +
+        `<input id="tagAddInput" class="tag-add-input" placeholder="+ 태그" maxlength="30" />`;
 
-      document.getElementById('selArea').addEventListener('change', (e) => {
-        currentData.area = e.target.value;
-        renderBadgeSelectors();
+      tagsWrap.querySelectorAll('.tag-chip-x').forEach(el => {
+        el.addEventListener('click', () => {
+          const i = parseInt(el.dataset.i, 10);
+          currentData.tags.splice(i, 1);
+          renderTags();
+        });
       });
-      document.getElementById('selDept').addEventListener('change', (e) => {
-        currentData.department = e.target.value;
-        renderBadgeSelectors();
+      const input = document.getElementById('tagAddInput');
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ',') {
+          e.preventDefault();
+          const v = input.value.trim().replace(/,/g, '');
+          if (v && !currentData.tags.includes(v) && currentData.tags.length < 10) {
+            currentData.tags.push(v);
+            renderTags();
+            setTimeout(() => document.getElementById('tagAddInput')?.focus(), 0);
+          }
+        }
       });
-      document.getElementById('selType').addEventListener('change', (e) => {
-        currentData.type = e.target.value;
-        renderBadgeSelectors();
-      });
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     }
 
     prevTitle.addEventListener('blur', () => {
@@ -306,32 +339,53 @@
       if (!currentData) return;
       currentData.title = prevTitle.textContent.trim() || currentData.title;
       currentData.content = prevContent.textContent.trim() || currentData.content;
+
+      const pendingTag = document.getElementById('tagAddInput')?.value.trim();
+      if (pendingTag && !currentData.tags.includes(pendingTag) && currentData.tags.length < 10) {
+        currentData.tags.push(pendingTag);
+      }
+
       saveBtn.textContent = '저장 중...'; saveBtn.disabled = true;
       try {
-        const res = await fetch(`${API_BASE}/notion`, {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
+        const res = await fetch(`${API_BASE}/vault`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             title: currentData.title,
             area: currentData.area,
-            department: currentData.department,
-            type: currentData.type,
+            tags: currentData.tags,
             content: currentData.content,
-            status: '신규'
+            original: currentData.original,
+            source: currentSource,
           })
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error);
-        saveLocally(currentData); showToast('Notion에 저장됐어요!'); hidePreview();
-      } catch {
-        saveLocally(currentData); showToast('로컬 저장됨 (Notion 연결 확인 필요)'); hidePreview();
-      } finally { saveBtn.textContent = 'Notion에 저장'; saveBtn.disabled = false; }
+        if (!res.ok || !data.success) throw new Error(data.error || 'save failed');
+        saveLocally(currentData);
+        showToast('vault에 저장됐어요');
+        hidePreview();
+      } catch (e) {
+        saveLocally(currentData);
+        showToast('로컬 저장됨 (vault 연결 확인 필요)');
+        hidePreview();
+      } finally { saveBtn.textContent = 'vault에 저장'; saveBtn.disabled = false; }
     });
 
     discardBtn.addEventListener('click', hidePreview);
-    function hidePreview() { preview.style.display = 'none'; currentData = null; textInput.value = ''; }
+    function hidePreview() {
+      preview.style.display = 'none';
+      currentData = null;
+      textInput.value = '';
+    }
 
     function saveLocally(data) {
-      const item = { ...data, date: new Date().toLocaleDateString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) };
+      const item = {
+        title: data.title,
+        area: data.area,
+        tags: [...data.tags],
+        content: data.content,
+        date: new Date().toLocaleDateString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+      };
       savedItems.unshift(item);
       if (savedItems.length > 50) savedItems.pop();
       localStorage.setItem('voiceInbox', JSON.stringify(savedItems));
@@ -341,57 +395,23 @@
     function renderList() {
       if (savedItems.length === 0) { listLabel.style.display = 'none'; return; }
       listLabel.style.display = 'block';
-      savedList.innerHTML = savedItems.slice(0, 10).map(item => `
-        <div class="saved-item">
-          <div class="saved-item-badges">
-            <span class="badge area-${item.area || ''}" style="font-size:0.68rem;padding:1px 7px;">${item.area || item.category || ''}</span>
-            <span class="badge type-${item.type || ''}" style="font-size:0.68rem;padding:1px 7px;">${item.type || ''}</span>
-          </div>
-          <div class="saved-item-text">
-            <div class="saved-item-title">${item.title}</div>
-            <div class="saved-item-meta">${item.department ? item.department + ' · ' : ''}${item.date}</div>
-          </div>
-        </div>`).join('');
+      savedList.innerHTML = savedItems.slice(0, 10).map(item => {
+        const tags = (item.tags || []).slice(0, 4).map(t => `<span class="saved-item-tag">${escapeHtml(t)}</span>`).join('');
+        return `
+          <div class="saved-item">
+            <span class="saved-item-area area-${item.area || '병원'}">${item.area || '병원'}</span>
+            <div class="saved-item-text">
+              <div class="saved-item-title">${escapeHtml(item.title || '')}</div>
+              ${tags ? `<div class="saved-item-tags">${tags}</div>` : ''}
+              <div class="saved-item-meta">${item.date || ''}</div>
+            </div>
+          </div>`;
+      }).join('');
     }
 
-    function showToast(msg) { toast.textContent = msg; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2800); }
-
-    function localClassify(text) {
-      let area = '병원', department = '기타', type = '할일';
-
-      if (/진료|환자|치료|발치|임플란트|보철|스케일링|충치|크라운|틀니|교정|신경치료/.test(text)) {
-        area = '병원'; department = '진료실';
-      } else if (/접수|수납|예약|보험|청구|데스크|전화/.test(text)) {
-        area = '병원'; department = '데스크';
-      } else if (/기공|보철물|왁스|인상|모형|지르코니아/.test(text)) {
-        area = '병원'; department = '기공실';
-      } else if (/마케팅|광고|SNS|블로그|홍보|이벤트|캠페인/.test(text)) {
-        area = '병원'; department = '마케팅';
-      } else if (/매출|인건비|급여|채용|퇴사|계약|경영|회계|세무/.test(text)) {
-        area = '병원'; department = '경영';
-      } else if (/코딩|개발|코드|배포|API|서버|프로그래밍|앱|웹|GitHub/.test(text)) {
-        area = '개인업무'; department = '개발';
-      } else if (/강의준비|강의자료|PPT|발표자료|슬라이드|교안|수업준비/.test(text)) {
-        area = '개인업무'; department = '강의준비';
-      } else if (/공부|강의|세미나|학회|논문|자격증|수업/.test(text)) {
-        area = '개인업무'; department = '학습';
-      } else if (/운동|헬스|건강|검진|약/.test(text)) {
-        area = '개인생활'; department = '건강';
-      } else if (/가족|아이|아내|부모|집/.test(text)) {
-        area = '개인생활'; department = '가족';
-      } else if (/쇼핑|구매|주문|사야|장보기/.test(text)) {
-        area = '개인생활'; department = '기타';
-      }
-
-      if (/일정|약속|미팅|회의|방문|예약|다음주|오늘|내일|모레|시에|시반/.test(text)) {
-        type = '일정';
-      } else if (/아이디어|생각|기획|개선|제안|어떨까|만들면|해보면/.test(text)) {
-        type = '아이디어';
-      } else {
-        type = '할일';
-      }
-
-      return { title: text.length > 20 ? text.slice(0, 20) + '...' : text, area, department, type, content: text };
+    function showToast(msg) {
+      toast.textContent = msg; toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2800);
     }
 
     renderList();
