@@ -101,6 +101,17 @@
     .tag-add-input::placeholder { color: #44446a; }
     .tag-add-input:focus { border-color: #6a6a8a; border-style: solid; }
 
+    .append-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(80,180,120,0.12); border: 1px solid rgba(80,180,120,0.3);
+      border-radius: 14px; padding: 4px 12px; font-size: 0.78rem; color: #50b478;
+      margin-bottom: 12px;
+    }
+    .append-badge-x {
+      color: #6a8a6a; cursor: pointer; padding: 0 4px; font-weight: 400; user-select: none;
+    }
+    .append-badge-x:hover { color: #d07070; }
+
     .preview-actions { display: flex; gap: 8px; margin-top: 16px; }
     .btn-save {
       flex: 1; background: #252550; border: 1px solid #3a3a70; border-radius: 8px;
@@ -154,7 +165,7 @@
   </div>
   <div id="noSpeech">음성 인식이 지원되지 않는 브라우저입니다.<br>아래 텍스트 입력을 사용하세요.</div>
   <div class="text-input-row">
-    <input id="textInput" type="text" placeholder="또는 텍스트로 입력..." />
+    <input id="textInput" type="text" placeholder="#그룹명 메모 또는 텍스트로 입력..." />
     <button id="sendTextBtn">분류 저장</button>
   </div>
   <div id="processing">분류 중...</div>
@@ -171,6 +182,7 @@
       <span class="preview-label">태그</span>
       <div id="tagsWrap" class="tags-wrap"></div>
     </div>
+    <div id="appendBadge" class="append-badge" style="display:none"></div>
     <div id="prevContent" class="preview-content" contenteditable="true" spellcheck="false"></div>
     <div class="preview-actions">
       <button class="btn-save" id="saveBtn">vault에 저장</button>
@@ -187,6 +199,7 @@
 
     let currentData = null;
     let currentSource = 'text';
+    let currentGroup = null;
     const savedItems = JSON.parse(localStorage.getItem('voiceInbox') || '[]');
 
     const micBtn = document.getElementById('micBtn');
@@ -247,6 +260,12 @@
 
     async function processText(text, source) {
       currentSource = source || 'text';
+      currentGroup = null;
+      const groupMatch = text.match(/^#([^\s#]+)\s+/);
+      if (groupMatch) {
+        currentGroup = groupMatch[1];
+        text = text.slice(groupMatch[0].length);
+      }
       processing.style.display = 'block'; preview.style.display = 'none';
       try {
         const res = await fetch(`${API_BASE}/classify`, {
@@ -281,7 +300,25 @@
       prevContent.textContent = currentData.content;
       renderArea();
       renderTags();
+      renderAppendBadge();
       preview.style.display = 'block';
+    }
+
+    function renderAppendBadge() {
+      const badge = document.getElementById('appendBadge');
+      if (currentGroup) {
+        badge.innerHTML = '&#128206; <b>' + escapeHtml(currentGroup) + '</b>에 누적 <span class="append-badge-x" id="clearGroup">&times;</span>';
+        badge.style.display = 'inline-flex';
+        document.getElementById('clearGroup').addEventListener('click', () => {
+          currentGroup = null;
+          renderAppendBadge();
+          saveBtn.textContent = 'vault에 저장';
+        });
+        saveBtn.textContent = currentGroup + '에 누적';
+      } else {
+        badge.style.display = 'none';
+        saveBtn.textContent = 'vault에 저장';
+      }
     }
 
     function renderArea() {
@@ -350,19 +387,19 @@
         const res = await fetch(`${API_BASE}/vault`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
+          body: JSON.stringify(Object.assign({
             title: currentData.title,
             area: currentData.area,
             tags: currentData.tags,
             content: currentData.content,
             original: currentData.original,
             source: currentSource,
-          })
+          }, currentGroup ? { mode: 'append', group: currentGroup } : {}))
         });
         const data = await res.json();
         if (!res.ok || !data.success) throw new Error(data.error || 'save failed');
         saveLocally(currentData);
-        showToast('vault에 저장됐어요');
+        showToast(currentGroup ? currentGroup + '에 누적됐어요' : 'vault에 저장됐어요');
         hidePreview();
       } catch (e) {
         saveLocally(currentData);
@@ -375,6 +412,7 @@
     function hidePreview() {
       preview.style.display = 'none';
       currentData = null;
+      currentGroup = null;
       textInput.value = '';
     }
 
