@@ -1,38 +1,61 @@
 # voice-inbox — next task
 
-> 마지막 갱신: 2026-05-18 (DESKTOP-J4M90RN, PC3)
-> 마지막 세션: [session_20260518_obsidian_integration_planning.md](session_20260518_obsidian_integration_planning.md)
+> 마지막 갱신: 2026-05-20 (PC1, SUNQGM)
+> 마지막 세션: [session_20260520_obsidian_accumulate_bot_split.md](session_20260520_obsidian_accumulate_bot_split.md)
+> 이전: [session_20260518_obsidian_integration_planning.md](session_20260518_obsidian_integration_planning.md)
 
 ## 현재 상태
 
-**기획 완료, 구현 0** — 옵시디언 통합 기획안 [기획안.html](../../기획안.html) v0.2 작성됨. 핵심 결정 모두 확정:
+**Phase 1 보류 검토 중** — 텔레그램 봇(`Z:/web/tgbot/`) 존재 발견. 봇이 `claude.exe` subprocess 게이트웨이라 `/옵시` 슬래시 그대로 활용 가능 → voice-inbox 자체 필요성 재평가 단계.
 
-- 옵시디언 vault 정본 (`\\Sunq\sunq\vault\inbox\`)
-- Notion 즉시 폐기
-- NAS WebDAV 통로 (`sunq818.synology.me:5006`)
-- 영역 1축 + 자유 태그
+이번 세션 산출물:
+- [`intent.md`](../../intent.md) 신규 — 본질·매핑(옵션 A)·그룹 누적 결정 박힘
+- `C:/Users/sunq8/.claude/commands/옵시.md` 누적 모드 추가 (PC1 로컬, NAS 미반영)
 
-## 다음 단계 — Phase 1: Edge Function `/vault` 신설
+## 결정 대기 (가장 중요)
 
-순서대로:
+**텔레그램 봇 운영 전략** — 다음 세션에서 사용자가 셋 중 선택:
 
-1. **자격증명 받기** — 사용자에게 Synology WebDAV 계정·비밀번호 요청 → `set-secret.cmd synology.webdav.user <값>` / `synology.webdav.password <값>` 영속화
-2. **Edge Function 코드 fetch** — Supabase MCP `get_edge_function` (project_id `chnqtrmlglqdmzqwsazm`, function `voice-inbox`)
-3. **`/notion` 제거, `/vault` 신설** — WebDAV PUT, frontmatter 구성, 파일명 `YYYY-MM-DD HHmm - {title}.md`
-4. **`/classify` 재작성** — 영역 3개 enum만, 항목·유형 제거, `tags: string[]` 자유 N개. AI 프롬프트에 기존 태그 컨텍스트 주입 (vault `.tag_index.md` 별도 파일이 가장 단순)
-5. **voice-inbox.html UI 교체** — 영역 select 1개 + chip 자동완성. `AREA_DEPT_MAP`·`TYPES` 상수 제거
-6. **배포 + 검증** — commit → push → GitHub Pages 반영 대기 → Playwright 로 실제 메모 1건 입력 → vault 에 .md 떨어지는지 확인
-7. **(선택) 기존 Notion 메모 이관** — 1회성 export → frontmatter 변환 → vault 적재
+| 옵션 | 내용 |
+|---|---|
+| **1 (추천)** | 봇 두 개 분리: `@SunQ_memo_bot`(신규, 메모 전용·음성 STT) + `@SunQ_assist_bot`(기존, 범용) |
+| 2 | 한 봇·자동 분기 (음성=메모, 텍스트=어시스턴트) |
+| 3 | 한 봇·명시 트리거만 (`/메모`, `#그룹`) |
+
+결정 후 voice-inbox Phase 1 부활/폐기도 같이 정함.
+
+## 다음 단계 (옵션 1 가정)
+
+1. `Z:/web/tgbot/bot.py` 코드 Read — 현재 시스템 프롬프트, `/옵시` 슬래시 호출 가능 여부, 음성 메시지(`.ogg`) 처리 단계 존재 여부 확인
+2. BotFather 에서 새 봇 생성 → 토큰
+3. `Z:\web\.claude-setup\credentials\set-secret.cmd telegram.bot.memo_token "<값>"`
+4. `bot.py` 복제 → `bot-memo.py`. 진입점 시스템 프롬프트만 다름:
+   - "텔레그램에서 온 모든 메시지는 vault 메모 입력. `#그룹명` prefix 또는 자연어 누적 지시 있으면 그 그룹에 누적, 없으면 단발 메모. `/옵시` 슬래시 호출. 명시 작업 지시(유튜브 정리 등)는 그 지시 우선"
+5. `install.ps1` 에 새 Task Scheduler 항목 추가
+6. 음성 메시지 STT — Whisper 로컬·Whisper API·MiniMax·기타 중 결정 후 통합
+7. intent.md "결정 기록" 섹션에 봇 분리 결과 + voice-inbox Phase 1 처리 방침 추가
+
+## 사후 처리
+
+- **다음 `/sunq` 호출 시** `옵시.md` 슬래시(NAS 정본·sunq설정.md) 동기화 필요 — 이 세션에서 PC1 만 수정됨
 
 ## 환경
 
 - 레포: SunQthecodemaker/voice-inbox · main
 - 배포: https://sunqthecodemaker.github.io/voice-inbox/
-- Edge Function: v5 (MiniMax M2.7) — Phase 1 후 v6 으로
-- vault: `\\Sunq\sunq\vault\` (Synology Drive sync 운영 중)
-- 차용 reference: 오픈채팅정리 프로젝트 vault append 패턴
+- Edge Function: v5 (MiniMax M2.7) — Phase 1 보류로 v6 미진행
+- vault: `\\Sunq\sunq\vault\` (Synology Drive sync)
+- 텔레그램 봇 코드: `Z:/web/tgbot/` (별도 프로젝트)
+- 봇 인증·STT 키 등 자격증명: `Z:\web\.claude-setup\credentials\secrets.json`
 
-## 메모리 시스템 트랙 (별도)
+## 보류된 Phase 1 단계 (참고용)
 
-이번 세션 인지 실패 4건 → `Z:\web\메모리시스템\멍청이.md` + `Z:\web\.claude-memory\project_memory_recall_fixes.md` 트래킹.
-**별도 세션에서 처리** — voice-inbox 작업과 분리.
+봇 통합이 실측 후 부족하면 부활:
+
+1. 자격증명 받기 (Synology WebDAV user/password)
+2. Edge Function `voice-inbox` 코드 fetch
+3. `/notion` 제거, `/vault` 신설 (WebDAV PUT)
+4. `/classify` 재작성 (영역 3개 enum + 자유 태그) — **그룹 누적 모드 분기도 같이**
+5. voice-inbox.html UI 교체 (영역 select + chip 자동완성 + 그룹 칩 추가)
+6. 배포·검증
+7. 기존 Notion 메모 이관(선택)
