@@ -1,61 +1,41 @@
-# voice-inbox — next task
+# next_task — voice-inbox
 
-> 마지막 갱신: 2026-05-20 (PC1, SUNQGM)
-> 마지막 세션: [session_20260520_obsidian_accumulate_bot_split.md](session_20260520_obsidian_accumulate_bot_split.md)
-> 이전: [session_20260518_obsidian_integration_planning.md](session_20260518_obsidian_integration_planning.md)
+## 미션: 파일·사진 첨부 기능 추가 (2026-05-24)
 
-## 현재 상태
+### 배경 — 워크플로우 갭
 
-**Phase 1 보류 검토 중** — 텔레그램 봇(`Z:/web/tgbot/`) 존재 발견. 봇이 `claude.exe` subprocess 게이트웨이라 `/옵시` 슬래시 그대로 활용 가능 → voice-inbox 자체 필요성 재평가 단계.
+폰에서 vault 에 박는 입력 인터페이스 현황:
+- ✅ **텍스트·음성** → voice-inbox (이미 잘 됨, AI 자동 분류)
+- ✅ **카톡 텍스트·URL** → PC `/옵시` slash sweep
+- ❌ **폰에서 파일·사진** → **갭**
 
-이번 세션 산출물:
-- [`intent.md`](../../intent.md) 신규 — 본질·매핑(옵션 A)·그룹 누적 결정 박힘
-- `C:/Users/sunq8/.claude/commands/옵시.md` 누적 모드 추가 (PC1 로컬, NAS 미반영)
+옵시 모바일 미사용 결정 (안드로이드 sandbox 로 NAS vault 직접 마운트 불가 + sync 도구 거치는 부담). → voice-inbox 가 이 갭도 메우는 것이 본질 (intent.md "vault 입력 인터페이스" 정의에 부합).
 
-## 결정 대기 (가장 중요)
+### 본질
 
-**텔레그램 봇 운영 전략** — 다음 세션에서 사용자가 셋 중 선택:
+**텍스트·음성·파일·사진 all-in-one 모바일 inbox**. vault 입력 단일 진입점.
 
-| 옵션 | 내용 |
-|---|---|
-| **1 (추천)** | 봇 두 개 분리: `@SunQ_memo_bot`(신규, 메모 전용·음성 STT) + `@SunQ_assist_bot`(기존, 범용) |
-| 2 | 한 봇·자동 분기 (음성=메모, 텍스트=어시스턴트) |
-| 3 | 한 봇·명시 트리거만 (`/메모`, `#그룹`) |
+### 핵심 요구사항
 
-결정 후 voice-inbox Phase 1 부활/폐기도 같이 정함.
+1. **UI 에 첨부 버튼** — 파일·사진 선택 (모바일 카메라 / 갤러리 / 파일)
+2. **안드로이드 share intent 받기** — 카톡·갤러리·기타 앱에서 "공유 → voice-inbox" 1탭으로 들어오기 (PWA + Web Share Target API)
+3. **첨부물 저장 경로** — `vault/수집함/attachments/{날짜}_{원본파일명}` (WebDAV PUT 또는 Supabase Storage 경유 후 vault sync)
+4. **텍스트 캡션 동시 입력** — 첨부물 + 한 줄 캡션 → AI 분류 → 노트 생성 시 첨부 wikilink 포함
+5. **PC `/옵시` 처리 연계** — 수집함 첨부물은 다음 `/옵시` sweep 에서 자동 영역 분류 + wiki 정리
 
-## 다음 단계 (옵션 1 가정)
+### 비고
 
-1. `Z:/web/tgbot/bot.py` 코드 Read — 현재 시스템 프롬프트, `/옵시` 슬래시 호출 가능 여부, 음성 메시지(`.ogg`) 처리 단계 존재 여부 확인
-2. BotFather 에서 새 봇 생성 → 토큰
-3. `Z:\web\.claude-setup\credentials\set-secret.cmd telegram.bot.memo_token "<값>"`
-4. `bot.py` 복제 → `bot-memo.py`. 진입점 시스템 프롬프트만 다름:
-   - "텔레그램에서 온 모든 메시지는 vault 메모 입력. `#그룹명` prefix 또는 자연어 누적 지시 있으면 그 그룹에 누적, 없으면 단발 메모. `/옵시` 슬래시 호출. 명시 작업 지시(유튜브 정리 등)는 그 지시 우선"
-5. `install.ps1` 에 새 Task Scheduler 항목 추가
-6. 음성 메시지 STT — Whisper 로컬·Whisper API·MiniMax·기타 중 결정 후 통합
-7. intent.md "결정 기록" 섹션에 봇 분리 결과 + voice-inbox Phase 1 처리 방침 추가
+- 현재 voice-inbox 코드: 음성/텍스트 → MiniMax 분류 → Notion 또는 vault. intent.md (vault) 와 CLAUDE.md (Notion) 불일치 — 작업 시작 시 어느 쪽이 현행인지 먼저 확인
+- WebDAV: `https://sunq818.synology.me:5006/sunq/vault/수집함/` (이미 PC RaiDrive·rclone 으로 검증)
+- 인증: 시놀로지 vault 전용 계정 신규 발급 권장 (메인 계정 평문 노출 회피)
+- PWA Web Share Target 안드로이드 Chrome 지원: https://web.dev/web-share-target/
 
-## 사후 처리
+### 관련
 
-- **다음 `/sunq` 호출 시** `옵시.md` 슬래시(NAS 정본·sunq설정.md) 동기화 필요 — 이 세션에서 PC1 만 수정됨
+- [intent.md](../../intent.md) — voice-inbox 페르소나·본질
+- [CLAUDE.md](../../CLAUDE.md) — 현 아키텍처 (옛 Notion 흐름 명시, intent 와 갱신 갭 있음)
+- 사용자 프로필 — `Z:/web/claude-sync/memory/profile/user_profile.md` "모바일 메모 워크플로우" 섹션
 
-## 환경
+### 우선순위
 
-- 레포: SunQthecodemaker/voice-inbox · main
-- 배포: https://sunqthecodemaker.github.io/voice-inbox/
-- Edge Function: v5 (MiniMax M2.7) — Phase 1 보류로 v6 미진행
-- vault: `\\Sunq\sunq\vault\` (Synology Drive sync)
-- 텔레그램 봇 코드: `Z:/web/tgbot/` (별도 프로젝트)
-- 봇 인증·STT 키 등 자격증명: `Z:\web\.claude-setup\credentials\secrets.json`
-
-## 보류된 Phase 1 단계 (참고용)
-
-봇 통합이 실측 후 부족하면 부활:
-
-1. 자격증명 받기 (Synology WebDAV user/password)
-2. Edge Function `voice-inbox` 코드 fetch
-3. `/notion` 제거, `/vault` 신설 (WebDAV PUT)
-4. `/classify` 재작성 (영역 3개 enum + 자유 태그) — **그룹 누적 모드 분기도 같이**
-5. voice-inbox.html UI 교체 (영역 select + chip 자동완성 + 그룹 칩 추가)
-6. 배포·검증
-7. 기존 Notion 메모 이관(선택)
+낮음·중간 — 현 갭 우회 가능 (PC 카톡에서 다운 후 vault/수집함/ 드롭). 사용자 짜증이 보이면 우선순위 ↑.

@@ -1,0 +1,28 @@
+- generic [active] [ref=e1]:
+  - heading "보이스 인박스" [level=1] [ref=e2]
+  - generic [ref=e3]:
+    - button "🎙️" [ref=e4] [cursor=pointer]
+    - generic [ref=e5]: 버튼을 눌러 음성 입력
+  - generic [ref=e6]:
+    - textbox "또는 텍스트로 입력..." [ref=e7]: 내일 기공실에 지르코니아 크라운 3개 보내야 함
+    - button "분류 저장" [ref=e8] [cursor=pointer]
+  - generic [ref=e20]:
+    - generic [ref=e21]:
+      - generic [ref=e22]: 제목
+      - generic [ref=e23]: 크라운 전달
+    - generic [ref=e24]:
+      - generic [ref=e25]: 분류
+      - generic [ref=e26]:
+        - generic [ref=e27]: 병원
+        - generic [ref=e28]: 기공실
+        - generic [ref=e29]: 할일
+    - generic [ref=e30]: 내일 기공실에 지르코니아 크라운 3개를 보내야 하는 할 일
+    - generic [ref=e31]:
+      - button "Notion에 저장" [ref=e32] [cursor=pointer]
+      - button "취소" [ref=e33] [cursor=pointer]
+  - generic [ref=e9]: 최근 항목
+  - generic [ref=e11]:
+    - generic [ref=e13]: 할일
+    - generic [ref=e15]:
+      - generic [ref=e16]: 치과 예약 확인
+      - generic [ref=e17]: 4월 11일 오후 09:11

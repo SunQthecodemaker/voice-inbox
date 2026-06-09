@@ -1,0 +1,37 @@
+- generic [ref=e1]:
+  - heading "보이스 인박스" [level=1] [ref=e2]
+  - generic [ref=e3]:
+    - button "🎙️" [ref=e4] [cursor=pointer]
+    - generic [ref=e5]: 버튼을 눌러 음성 입력
+  - generic [ref=e6]:
+    - textbox "또는 텍스트로 입력..." [ref=e7]: GitHub Actions 배포 파이프라인 개선 아이디어 정리해보자
+    - button "분류 저장" [active] [ref=e8] [cursor=pointer]
+  - generic [ref=e20]:
+    - generic [ref=e21]:
+      - generic [ref=e22]: 제목
+      - generic [ref=e23]: 파이프라인 개선
+    - generic [ref=e24]:
+      - generic [ref=e25]: 분류
+      - generic [ref=e26]:
+        - generic [ref=e48]: 개인업무
+        - generic [ref=e49]: 개발
+        - generic [ref=e50]: 아이디어
+    - generic [ref=e30]: GitHub Actions 배포 파이프라인을 개선하기 위한 아이디어를 정리해보자는 메모이다.
+    - generic [ref=e31]:
+      - button "Notion에 저장" [ref=e32] [cursor=pointer]
+      - button "취소" [ref=e33] [cursor=pointer]
+  - generic [ref=e9]: 최근 항목
+  - generic [ref=e10]:
+    - generic [ref=e34]:
+      - generic [ref=e35]:
+        - generic [ref=e36]: 병원
+        - generic [ref=e37]: 할일
+      - generic [ref=e38]:
+        - generic [ref=e39]: 크라운 전달
+        - generic [ref=e40]: 기공실 · 4월 11일 오후 09:33
+    - generic [ref=e41]:
+      - generic [ref=e43]: 할일
+      - generic [ref=e45]:
+        - generic [ref=e46]: 치과 예약 확인
+        - generic [ref=e47]: 4월 11일 오후 09:11
+  - generic [ref=e18]: Notion에 저장됐어요!
